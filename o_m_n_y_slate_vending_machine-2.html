@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>O.M.N.Y. Slate | One Mission New Year</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #e5e5e5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 1rem;
+        }
+
+        .machine-casing {
+            background-color: #d1d5db; /* Light grey case */
+            border: 4px solid #a3a3a3;
+            box-shadow: 
+                inset 10px 10px 0px rgba(255,255,255,0.4),
+                inset -10px -10px 0px rgba(0,0,0,0.1),
+                15px 15px 30px rgba(0,0,0,0.2);
+            border-radius: 4px;
+            width: 100%;
+            max-width: 850px;
+            padding: 1rem;
+            position: relative;
+        }
+
+        .machine-inner-panel {
+            background-color: #2d2d2d; /* Dark charcoal */
+            border: 2px solid #1a1a1a;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        @media (min-width: 768px) {
+            .machine-inner-panel {
+                flex-direction: row;
+            }
+        }
+
+        .hardware-module {
+            background-color: #d1d5db;
+            border: 2px solid #525252;
+            box-shadow: inset 2px 2px 0px rgba(255,255,255,0.5), inset -2px -2px 0px rgba(0,0,0,0.2);
+            position: relative;
+        }
+
+        .screen-bezel {
+            background-color: #9ca3af;
+            border: 2px solid #4b5563;
+            padding: 1rem;
+            box-shadow: inset 3px 3px 6px rgba(0,0,0,0.3);
+            border-radius: 4px;
+        }
+
+        .screen-display {
+            background-color: #fff;
+            height: 500px;
+            border: 4px solid #111;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .screen-top-half {
+            flex: 0 0 auto;
+            max-height: 48%;
+            min-height: 0;
+            background-color: #fff;
+            position: relative;
+            z-index: 10;
+            padding: 2.5rem 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .screen-bottom-half {
+            flex: 1 1 0;
+            min-height: 0;
+            background-color: #000;
+            color: #fff;
+            position: relative;
+            z-index: 10;
+            padding: 1rem;
+            overflow-y: auto;
+            border-top: 4px solid #111;
+            scrollbar-width: thin;
+            scrollbar-color: #555 #111;
+        }
+
+        /* Custom Scrollbar for the screen */
+        .screen-bottom-half::-webkit-scrollbar { width: 8px; }
+        .screen-bottom-half::-webkit-scrollbar-track { background: #111; }
+        .screen-bottom-half::-webkit-scrollbar-thumb { background: #555; border-radius: 4px; }
+        .screen-bottom-half::-webkit-scrollbar-thumb:hover { background: #888; }
+
+        /* Custom Scrollbar for the bio section */
+        .bio-scroll::-webkit-scrollbar { width: 6px; }
+        .bio-scroll::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); border-radius: 4px; margin-block: 4px; }
+        .bio-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .bio-scroll::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+        }
+
+        .omny-btn {
+            background-color: #000;
+            border: 2px solid #a3a3a3;
+            color: #fff;
+            border-radius: 6px;
+            padding: 0.75rem 0.5rem;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 80px;
+        }
+
+        .omny-btn:hover {
+            border-color: #10b981; /* Green hover effect */
+            background-color: #111;
+        }
+
+        .omny-btn .role {
+            font-size: 0.75rem;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 0.5rem;
+        }
+        
+        .omny-btn .candidate {
+            font-size: 18px;
+            color: #a3a3a3;
+            font-weight: 400;
+        }
+
+        /* Profile View Transitions */
+        #profile-view {
+            display: none;
+            height: 100%;
+            flex-direction: column;
+            background: #fff;
+            z-index: 20;
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            padding: 2rem 1.5rem;
+            animation: fadeIn 0.3s ease;
+        }
+
+        #profile-photo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: top; /* Focuses on the face */
+            border-radius: 0.5rem;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .braille {
+            font-size: 0.5rem;
+            letter-spacing: 2px;
+            color: #555;
+            margin-top: 2px;
+            display: block;
+        }
+
+        .hardware-text {
+            color: #fff;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 0.25rem;
+        }
+
+        .module-label {
+            color: #333;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        /* Reader Icon */
+        .contactless-waves {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="machine-casing">
+        
+        <!-- Header Panel -->
+        <div class="bg-black text-white text-center py-2 px-4 mb-4 border-4 border-[#222] flex items-center justify-center gap-2">
+            <span class="text-3xl font-bold tracking-tight">Welcome to the</span>
+            <span class="text-4xl tracking-tighter relative">
+                <span class="font-black">O.M<span style="letter-spacing: -2px;">.</span>N.Y.</span> <span class="font-normal">Slate</span>
+            </span>
+        </div>
+
+        <div class="machine-inner-panel">
+            
+            <!-- LEFT COLUMN (Screen & Lower Panels) - NOW FULL WIDTH -->
+            <div class="w-full flex flex-col gap-4">
+                
+                <!-- The Screen Module -->
+                <div class="screen-bezel">
+                    <div class="screen-display" id="interactive-screen">
+                        
+                        <!-- Screen Home View -->
+                        <div id="home-view" class="h-full flex flex-col w-full absolute inset-0 min-h-0 overflow-hidden">
+                            <!-- Top White Half -->
+                            <div class="screen-top-half" style="justify-content: flex-start; padding-top: 1.5rem; padding-bottom: 1rem;">
+                                <h2 class="text-2xl text-black font-bold z-20 relative mb-3 flex-shrink-0 leading-tight">
+                                    <span class="font-semibold text-3xl">O</span>ne <span class="font-semibold text-3xl">M</span>ission, <span class="font-semibold text-3xl">N</span>ew <span class="font-semibold text-3xl">Y</span>ear
+                                </h2>
+
+                                <div class="z-20 relative mb-3 overflow-y-auto bio-scroll flex-grow pr-2 text-xs text-gray-700 leading-relaxed border-l-2 border-[#e10098] pl-3 min-h-0">
+                                    Since 1972, the University Student Senate has served as the unifying voice for half a million students across 25 CUNY campuses. Our foundational mandate remains our bedrock: preserving the accessibility, affordability, and excellence of public higher education while protecting student welfare. Under the banner of "One Mission, New Year," our slate is dedicated to bridging this historic legacy with bold, forward-thinking innovation. If elected, we are committed to expanding upon this enduring mission by delivering tangible solutions that address the modern student experience. To remove daily financial and physical barriers to education, we will aggressively push for state legislation mandating OMNY transit access for all CUNY students, while fighting to secure the remaining $700,000 in State funding to massively scale our pilot support programs. Furthermore, we will modernize how our university connects by launching a centralized digital portal for campus and USS resources, alongside expanding the reach and impact of the USS scholarship. By tackling affordability, communication, and engagement head-on, these unified efforts represent our contribution to that "One Mission"—ensuring every CUNY student is empowered, informed, and fully supported in the year ahead.
+                                </div>
+
+                                <div class="flex-shrink-0 mt-auto">
+                                    <p class="text-2xl text-black font-bold z-20 relative leading-tight">How can we help you today?</p>
+                                    <p class="text-sm text-gray-500 mt-1 z-20 relative">Tap below to meet the slate</p>
+                                </div>
+                            </div>
+
+                            <!-- Bottom Black Half -->
+                            <div class="screen-bottom-half">
+                                <div class="menu-grid" id="menu-container">
+                                    <!-- Buttons injected via JS -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="profile-view">
+                            
+                            <div class="flex justify-between items-start w-full z-20 relative mb-4 gap-4">
+                                <div class="flex flex-col items-start gap-4 flex-1">
+                                    <button onclick="showHome()" class="bg-black text-white px-4 py-2 rounded-md text-sm font-bold hover:bg-gray-800 border-2 border-transparent hover:border-white transition-all">
+                                        ← Go Back
+                                    </button>
+
+                                    <div>
+                                        <div class="text-lg font-bold text-[#e10098] uppercase tracking-wide mb-1" id="profile-role">Role</div>
+                                        <h3 class="text-5xl font-black text-black leading-tight" id="profile-name">Candidate Name</h3>
+                                    </div>
+                                </div>
+
+                                <div class="w-[240px] h-[240px] bg-[#f3f4f6] border-2 border-dashed border-gray-400 rounded-xl flex flex-col items-center justify-center flex-shrink-0 shadow-inner mr-2 overflow-hidden" id="photo-container">
+                                    <img id="profile-photo" src="" alt="Candidate Photo" style="display: none;">
+                                    <div id="photo-placeholder-content" class="flex flex-col items-center justify-center h-full w-full">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                        </svg>
+                                        <span class="text-gray-500 text-xs font-bold uppercase tracking-wider">Photo</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="z-20 relative flex-grow min-h-0">
+                                <div class="bg-gray-100 p-4 rounded-lg border-l-4 border-[#e10098] h-full overflow-y-auto bio-scroll">
+                                    <h4 class="text-sm font-bold text-black uppercase mb-2">Bio</h4>
+                                    <p class="text-gray-800 text-sm leading-relaxed pb-4" id="profile-mission">
+                                        Mission details go here...
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Card Payment Panel -->
+                <div class="hardware-module p-3 flex gap-4 h-[160px] bg-[#d1d5db]">
+                    
+                    <!-- Zone 1: Left Half (PIN Pad and Screen) -->
+                    <div class="w-1/2 bg-[#a3a8ad] border-[3px] border-[#333] shadow-[inset_0_4px_6px_rgba(0,0,0,0.3)] rounded-md p-2 flex flex-col gap-2">
+                        
+                        <!-- Screen Area -->
+                        <div class="flex gap-2 h-[35%]">
+                            <!-- Blank Screen with Bezel -->
+                            <div class="flex-1 bg-[#e2e4e6] border-[4px] border-[#4a4a4a] rounded-sm shadow-[inset_0_0_8px_rgba(0,0,0,0.2)]"></div>
+                            <!-- Two small vertical buttons -->
+                            <div class="w-5 flex flex-col gap-1.5">
+                                <div class="flex-1 bg-[#888] border border-[#444] rounded-sm shadow-sm"></div>
+                                <div class="flex-1 bg-[#888] border border-[#444] rounded-sm shadow-sm"></div>
+                            </div>
+                        </div>
+
+                        <!-- Keypad Area -->
+                        <div class="flex gap-2 flex-1">
+                            <!-- Stylus -->
+                            <div class="w-3 bg-gradient-to-r from-[#666] via-[#999] to-[#555] border border-[#333] rounded-full shadow-[2px_0_4px_rgba(0,0,0,0.2)] h-full"></div>
+                            
+                            <!-- 4x3 Grid -->
+                            <div class="flex-1 grid grid-cols-3 gap-1">
+                                <!-- Row 1 -->
+                                <div class="bg-[#9ca3af] border border-[#555] rounded-sm shadow-[0_2px_0_#666]"></div>
+                                <div class="bg-[#9ca3af] border border-[#555] rounded-sm shadow-[0_2px_0_#666]"></div>
+                                <div class="bg-[#9ca3af] border border-[#555] rounded-sm shadow-[0_2px_0_#666]"></div>
+                                <!-- Row 2 -->
+                                <div class="bg-[#9ca3af] border border-[#555] rounded-sm shadow-[0_2px_0_#666]"></div>
+                                <div class="bg-[#9ca3af] border border-[#555] rounded-sm shadow-[0_2px_0_#666]"></div>
+                                <div class="bg-[#9ca3af] border border-[#555] rounded-sm shadow-[0_2px_0_#666]"></div>
+                                <!-- Row 3 -->
+                                <div class="bg-[#9ca3af] border border-[#555] rounded-sm shadow-[0_2px_0_#666]"></div>
+                                <div class="bg-[#9ca3af] border border-[#555] rounded-sm shadow-[0_2px_0_#666]"></div>
+                                <div class="bg-[#9ca3af] border border-[#555] rounded-sm shadow-[0_2px_0_#666]"></div>
+                                <!-- Row 4 -->
+                                <div class="bg-[#9ca3af] border border-[#555] rounded-sm shadow-[0_2px_0_#666]"></div>
+                                <div class="bg-[#9ca3af] border border-[#555] rounded-sm shadow-[0_2px_0_#666]"></div>
+                                <div class="bg-[#9ca3af] border border-[#555] rounded-sm shadow-[0_2px_0_#666]"></div>
+                            </div>
+
+                            <!-- Command Keys -->
+                            <div class="w-10 flex flex-col gap-1">
+                                <div class="flex-1 bg-[#dc2626] border border-[#7f1d1d] rounded-sm shadow-[0_2px_0_#7f1d1d]"></div>
+                                <div class="flex-1 bg-[#eab308] border border-[#713f12] rounded-sm shadow-[0_2px_0_#713f12]"></div>
+                                <div class="flex-1 bg-[#16a34a] border border-[#14532d] rounded-sm shadow-[0_2px_0_#14532d]"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Half (Zones 2 & 3) -->
+                    <div class="w-1/2 flex flex-col">
+                        
+                        <!-- Zone 2: Top Right (Card Readers) -->
+                        <div class="flex-1 flex justify-center items-center gap-6 pt-1">
+                            
+                            <!-- Chip Reader -->
+                            <div class="w-[60px] h-[60px] bg-[#9ca3af] border-[2px] border-[#666] rounded-xl flex justify-center shadow-[0_2px_4px_rgba(0,0,0,0.1)] relative overflow-hidden">
+                                <div class="absolute bottom-0 w-8 h-10 bg-[#374151] border-t-[3px] border-l-[3px] border-r-[3px] border-[#111] rounded-t-md shadow-[inset_0_4px_6px_rgba(0,0,0,0.8)]"></div>
+                            </div>
+
+                            <!-- Swipe Reader -->
+                            <div class="w-[50px] h-[75px] bg-[#9ca3af] border-[2px] border-[#666] rounded-xl flex justify-center items-center shadow-[0_2px_4px_rgba(0,0,0,0.1)] relative overflow-hidden">
+                                <!-- Vertical channel -->
+                                <div class="w-3 h-full bg-[#1f2937] border-l-2 border-r-2 border-[#000] shadow-[inset_0_0_8px_rgba(0,0,0,0.9)] z-10"></div>
+                                <!-- Horizontal intersection line -->
+                                <div class="absolute w-full h-[3px] bg-[#111] top-1/2 -translate-y-1/2 z-20 border-y border-black"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Zone 3: Bottom Right (Signage Plaque) -->
+                        <div class="h-[55px] flex justify-center items-end pb-1">
+                            <div class="w-[90%] h-[42px] bg-[#8a8d91] border-2 border-[#555] rounded-lg shadow-[inset_0_1px_4px_rgba(0,0,0,0.4)] flex flex-col justify-center items-center">
+                                <span class="text-[#f1f5f9] font-sans text-[11px] font-bold tracking-[0.2em] uppercase">Card Payment</span>
+                                <div class="flex gap-3 -ml-4 mt-0.5 opacity-70">
+                                    <span class="text-[6px] text-[#e2e8f0] tracking-[0.2em]">⠃⠗⠁</span>
+                                    <span class="text-[6px] text-[#e2e8f0] tracking-[0.2em]">⠊⠇⠇</span>
+                                    <span class="text-[6px] text-[#e2e8f0] tracking-[0.2em]">⠑⠎⠎</span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        const slateData = [
+            {
+                role: "Chairperson",
+                name: "Davia A Willis",
+                mission: "I am a graduate student at John Jay College of Criminal Justice and a dedicated student leader with a strong commitment to advocacy, service, and inclusive representation. My leadership journey includes serving as Student Government President at Queensborough Community College and representing John Jay College in the University Student Senate. Through my experiences across CUNY and beyond, I have worked to amplify student voices, build meaningful connections across diverse communities, and advocate for opportunities that strengthen the student experience. I believe leadership is rooted in listening, collaboration, and ensuring that every campus has a seat at the table.",
+                photo: "https://cdn.phototourl.com/member/2026-09-25-aa298919-6d29-40c5-8389-359931fab784.jpg"
+            },
+            {
+                role: "Vice Chair for Legislative Affairs",
+                name: "Benjamin Wade",
+                mission: "My name is Benjamin Wade, and I currently serve as John Jay’s USS Delegate. I am running for Vice Chair of Legislative Affairs because my experience advocating for students at both the State and City levels makes me uniquely qualified to advance CUNY’s legislative agenda. As a senior, I understand the urgency of our priorities, starting with securing full funding for our state budget requests to expand the OMNY card pilot. Through my public service working in government, I have learned that transparent communication and strong relationships are key to driving policy change alongside making informed decisions for our student body.",
+                photo: "https://cdn.phototourl.com/member/2026-09-25-2b4924e2-e46a-4337-89c0-6f5301fb2cd0.png"
+            },
+            {
+                role: "Vice Chair for Fiscal Affairs",
+                name: "Tatiana Alexis-Mclaren",
+                mission: "To ensure responsible and equitable distribution of USS funds, supporting student organizations across all campuses and maintaining strict financial accountability.",
+                photo: null
+            },
+            {
+                role: "Vice Chair for Graduate Affairs",
+                name: "Kirk Persaud",
+                mission: "To address the unique challenges faced by graduate students, including adjunct pay parity, affordable housing, and dedicated research funding.",
+                photo: null
+            },
+            {
+                role: "Vice Chair for Senior College Affairs",
+                name: "Favour Ogueri",
+                mission: "To unify senior college student governments, fostering collaboration and sharing best practices to enhance the four-year college experience.",
+                photo: null
+            },
+            {
+                role: "Vice Chair for Community College Affairs",
+                name: "Brian Flores Gerardo",
+                mission: "Salutations, folks! I’m Brian Flores Gerardo, a legally blind, first-generation Mexican American Liberal Arts and Science major with a knack for helping my community. My life before college was slightly uneventful—I always felt distant from those around me, but that all changed when my dear college advisors, mentors, and friends noticed me and the untapped leadership qualities I had. I have held numerous leadership positions since—at the campus level and CUNY-wide—and I am currently on a venture to share my story and experiences to help students engage with the college community. I am a firm believer that mentorship, resource awareness, and a strong student life experience at the post-secondary level can have a profound impact on graduation and retention. After all, it helped me pull through a few rocks and hard places! So, I seek to share this far and wide—not only to support students at the community colleges, but also students throughout the City University of New York.",
+                photo: "https://cdn.phototourl.com/member/2026-09-25-1a14a92d-18c8-4be1-8e42-49f8da3c8a53.jpg"
+            },
+            {
+                role: "Vice Chair for Evening & Part-time",
+                name: "Candidate for Evening/PT",
+                mission: "To guarantee that non-traditional students have access to essential campus services, advising, and student life activities outside of standard business hours.",
+                photo: null
+            },
+            {
+                role: "Vice Chair for Disability Affairs",
+                name: "Jullian Vera",
+                mission: "Hello, I am Jullian Vera, the Incumbent Vice Chair for Students with Disabilities. I come with lived experience with an invisible disability myself, growing up as a special needs student. In my term, I have worked and built coalitions to secure funding on the city level for assistive technology and specialists across CUNY schools. I am not hesitant to continue my work in steering and continue building the necessary coalitions to secure further funding for students with disabilities, so no one will be left behind on my watch. I am a City College student, double majoring in international relations and political science. I am involved in a lot of organizations outside of City College and am determined to make a long-lasting impact in CCNY, CUNY, and beyond. I aspire to run for elected office in the near future.",
+                photo: "https://cdn.phototourl.com/member/2026-09-25-0f3c0e77-2491-461e-9f8d-64bc7e4b48b0.jpg"
+            },
+            {
+                role: "Vice Chair for International Students Affairs",
+                name: "Sahana Sheeran Mirza",
+                mission: "I am Sahana Sheeran Mirza (Sheeran), an international student at LaGuardia Community College, majoring in Nutrition and Culinary Management. I currently serve as President of LaGuardia’s Student Government Association and am actively involved with the CUNY University Student Senate. As a student leader, I have focused on student advocacy, access to resources, and creating stronger connections. I also work as a Peer Advisor in the Community Health and Wellness Department, where I help students navigate college resources and find the right support. Beyond student leadership, I am involved in undergraduate research and initiatives focused on student engagement and academic support. As an international student myself, I understand the opportunities and challenges of navigating CUNY. My experiences across student government, peer advising, and research have shaped my commitment to ensuring that students are informed, represented, and connected to opportunities. I believe meaningful student leadership begins with listening, understanding the problem, and then doing the work necessary to create change.",
+                photo: "https://cdn.phototourl.com/member/2026-09-25-7dc4e3a9-408e-4076-9376-24da8a85b6de.jpg"
+            },
+            {
+                role: "Vice Chair for Technology Fee",
+                name: "Candidate for Tech Fee",
+                mission: "To ensure student tech fees are utilized effectively for necessary hardware, software, and infrastructural upgrades that directly benefit student learning and access.",
+                photo: null
+            }
+        ];
+
+        const menuContainer = document.getElementById('menu-container');
+        const homeView = document.getElementById('home-view');
+        const profileView = document.getElementById('profile-view');
+
+        function buildMenu() {
+            slateData.forEach((member, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'omny-btn';
+                btn.onclick = () => showProfile(index);
+                
+                // Format name fallback
+                const displayName = member.name.includes("Candidate for") ? "Name TBA" : member.name;
+
+                btn.innerHTML = `
+                    <span class="role">${member.role}</span>
+                    <span class="candidate">${displayName}</span>
+                `;
+                menuContainer.appendChild(btn);
+            });
+        }
+
+        function showProfile(index) {
+            const member = slateData[index];
+            const displayName = member.name.includes("Candidate for") ? "Name TBA" : member.name;
+            
+            document.getElementById('profile-role').innerText = member.role;
+            document.getElementById('profile-name').innerText = displayName;
+            document.getElementById('profile-mission').innerText = member.mission;
+
+            const photoImg = document.getElementById('profile-photo');
+            const photoPlaceholderContent = document.getElementById('photo-placeholder-content');
+            const photoContainer = document.getElementById('photo-container');
+
+            if (member.photo) {
+                photoImg.src = member.photo;
+                photoImg.style.display = 'block';
+                photoPlaceholderContent.style.display = 'none';
+                photoContainer.classList.remove('border-dashed', 'border-gray-400');
+                photoContainer.classList.add('border-solid', 'border-[#e10098]');
+                
+                // Fallback if the image fails to load
+                photoImg.onerror = () => {
+                    photoImg.style.display = 'none';
+                    photoPlaceholderContent.style.display = 'flex';
+                    photoContainer.classList.add('border-dashed', 'border-gray-400');
+                    photoContainer.classList.remove('border-solid', 'border-[#e10098]');
+                };
+            } else {
+                photoImg.style.display = 'none';
+                photoPlaceholderContent.style.display = 'flex';
+                photoContainer.classList.add('border-dashed', 'border-gray-400');
+                photoContainer.classList.remove('border-solid', 'border-[#e10098]');
+            }
+
+            homeView.style.display = 'none';
+            profileView.style.display = 'flex';
+        }
+
+        function showHome() {
+            profileView.style.display = 'none';
+            homeView.style.display = 'flex';
+        }
+
+        window.onload = () => {
+            buildMenu();
+        };
+    </script>
+</body>
+</html>
